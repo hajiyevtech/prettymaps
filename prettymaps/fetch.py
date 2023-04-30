@@ -18,21 +18,22 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import re
 import warnings
+from copy import deepcopy
+
 import numpy as np
 import osmnx as ox
-from copy import deepcopy
-from shapely.geometry import (
-    box,
-    Point,
-    Polygon,
-    MultiPolygon,
-    LineString,
-    MultiLineString,
-)
 from geopandas import GeoDataFrame
 from shapely.affinity import rotate
-from shapely.ops import unary_union
 from shapely.errors import ShapelyDeprecationWarning
+from shapely.geometry import (
+    LineString,
+    MultiLineString,
+    MultiPolygon,
+    Point,
+    Polygon,
+    box,
+)
+from shapely.ops import unary_union
 
 
 # Parse query (by coordinates, OSMId or name)
@@ -49,7 +50,6 @@ def parse_query(query):
 
 # Get circular or rectangular boundary around point
 def get_boundary(query, radius, ratio, circle=False, rotation=0):
-
     # Get point from query
     point = query if parse_query(query) == "coordinates" else ox.geocode(query)
     # Create GeoDataFrame from point
@@ -68,8 +68,12 @@ def get_boundary(query, radius, ratio, circle=False, rotation=0):
             geometry=[
                 rotate(
                     Polygon(
-                        [(x - dx, y - dy), (x + dx, y - dy),
-                         (x + dx, y + dy), (x - dx, y + dy)]
+                        [
+                            (x - dx, y - dy),
+                            (x + dx, y - dy),
+                            (x + dx, y + dy),
+                            (x - dx, y + dy),
+                        ]
                     ),
                     rotation,
                 )
@@ -85,13 +89,18 @@ def get_boundary(query, radius, ratio, circle=False, rotation=0):
 
 # Get perimeter from query
 def get_perimeter(
-    query, radius=None, ratio=1, by_osmid=False, circle=False, dilate=None, rotation=0, **kwargs
+    query,
+    radius=None,
+    ratio=1,
+    by_osmid=False,
+    circle=False,
+    dilate=None,
+    rotation=0,
+    **kwargs
 ):
-
     if radius:
         # Perimeter is a circular or rectangular shape
-        perimeter = get_boundary(
-            query, radius, ratio, circle=circle, rotation=rotation)
+        perimeter = get_boundary(query, radius, ratio, circle=circle, rotation=rotation)
     else:
         # Perimeter is a OSM or user-provided polygon
         if parse_query(query) == "polygon":
@@ -134,7 +143,6 @@ def get_gdf(
     n_curves=100,
     **kwargs
 ):
-
     if dilate == None:
         dilate = 0
 
@@ -145,8 +153,7 @@ def get_gdf(
     perimeter_with_tolerance = (
         ox.project_gdf(perimeter).buffer(dilate + perimeter_tolerance).to_crs(4326)
     )
-    perimeter_with_tolerance = unary_union(
-        perimeter_with_tolerance.geometry).buffer(0)
+    perimeter_with_tolerance = unary_union(perimeter_with_tolerance.geometry).buffer(0)
 
     # Fetch from perimeter's bounding box, to avoid missing some geometries
     bbox = box(*perimeter_with_tolerance.bounds)
@@ -200,7 +207,6 @@ def get_gdf(
 
 # Fetch GeoDataFrames given query and a dictionary of layers
 def get_gdfs(query, layers_dict, radius, ratio, dilate, rotation=0) -> dict:
-
     perimeter_kwargs = {}
     if "perimeter" in layers_dict:
         perimeter_kwargs = deepcopy(layers_dict["perimeter"])
@@ -213,15 +219,17 @@ def get_gdfs(query, layers_dict, radius, ratio, dilate, rotation=0) -> dict:
         ratio=ratio,
         rotation=rotation,
         dilate=dilate,
-        **perimeter_kwargs
+        **perimeter_kwargs,
     )
 
     # Get other layers as GeoDataFrames
     gdfs = {"perimeter": perimeter}
-    gdfs.update({
-        layer: get_gdf(layer, perimeter, **kwargs)
-        for layer, kwargs in layers_dict.items()
-        if layer != "perimeter"
-    })
+    gdfs.update(
+        {
+            layer: get_gdf(layer, perimeter, **kwargs)
+            for layer, kwargs in layers_dict.items()
+            if layer != "perimeter"
+        }
+    )
 
     return gdfs
