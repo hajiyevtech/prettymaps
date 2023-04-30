@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import click
@@ -256,6 +257,24 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
     result.save(img_path, dpi=(300, 300))
 
 
+def format_autodocumented_title():
+    tokens = sys.argv[:]
+    ignored_flags = ["--cmd-as-title"]
+    ignored_options = ["-o", "--output-dir"]
+    cmd_tokens = ["prettymaps"] + tokens[1:]
+    for flag in ignored_flags:
+        if flag in cmd_tokens:
+            cmd_tokens.remove(flag)
+    for opt in ignored_options:
+        try:
+            idx = cmd_tokens.index(opt)
+        except ValueError:
+            continue
+        else:
+            cmd_tokens = cmd_tokens[:idx] + cmd_tokens[idx + 2 :]
+    return " ".join(cmd_tokens)
+
+
 @click.command()
 @click.option(
     "--location",
@@ -329,6 +348,12 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
     show_default=True,
 )
 @click.option(
+    "--cmd-as-title",
+    is_flag=True,
+    help="If true, set the map title as the prettymaps CLI command used to generate it",
+    show_default=True,
+)
+@click.option(
     "-o",
     "--output-dir",
     default=None,
@@ -336,11 +361,19 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
     help="The directory to store the map under",
     show_default=True,
 )
+@click.option(
+    "--dpi",
+    default=100,
+    type=int,
+    help="Number of pixels per inch",
+    show_default=True,
+)
 @click.option("--bw", is_flag=True, help="Generate a black & white map")
 def draw(
     location,
     radius,
     circle,
+    cmd_as_title,
     format,
     theme,
     vertical,
@@ -411,7 +444,9 @@ def draw(
     plot(
         query=location,
         ax=ax,
+        figsize=figsize,
         radius=radius,
+        title=format_autodocumented_title() if cmd_as_title else None,
         credit=False,
         layers=generate_layers(circle, river_overflow),
         style=theme_params,

@@ -1001,6 +1001,14 @@ def plot(
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
 
+        if title:
+            ax.set_title(
+                label=title,
+                loc="center",
+                y=min(0.01, padding / (figsize[1] * plt.rcParams["figure.dpi"])),
+                fontdict={"family": "monospace", "fontsize": 10},
+            )
+
         # Save result
         if save_as:
             plt.savefig(save_as)
