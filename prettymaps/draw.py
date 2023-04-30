@@ -1001,8 +1001,6 @@ def plot(
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
 
-        # Adjust padding
-        plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
         # Save result
         if save_as:
             plt.savefig(save_as)
