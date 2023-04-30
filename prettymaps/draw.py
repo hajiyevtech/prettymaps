@@ -970,14 +970,16 @@ def plot(
     else:
         raise Exception(f"Unknown mode {mode}")
 
-    # 9. Draw background
+    # 9. Draw background, taking all the space in the figure
     if "background" in style:
         zorder = (
             style["background"].pop("zorder") if "zorder" in style["background"] else -1
         )
+        # We scale the background by 2 in each direction, to make it go over the figure's bounds themselves
+        full_figure_background = shapely.affinity.scale(box(*background.bounds), 2, 2)
         ax.add_patch(
             PolygonPatch(
-                background,
+                full_figure_background,
                 **{k: v for k, v in style["background"].items() if k != "dilate"},
                 zorder=zorder,
             )
@@ -993,6 +995,11 @@ def plot(
         ax.axis("off")
         ax.axis("equal")
         ax.autoscale()
+
+        xmin, ymin, xmax, ymax = background.bounds
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+
         # Adjust padding
         plt.subplots_adjust(left=0, bottom=0, right=1, top=1, wspace=0, hspace=0)
         # Save result
