@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "prettymaps"
+version = "1.0.1"
+description = "A simple python library to draw pretty maps from OpenStreetMap data"
+authors = ["Marcello Prates <marceloorp@gmail.com>"]
+maintainers = [
+    "Etienne Brodu <etn@etnbrd.com>",
+    "Balthazar Rouberol <br@imap.cc>"
+]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/marceloprates/prettymaps"
+repository = "https://github.com/marceloprates/prettymaps"
+keywords = [
+    "maps",
+    "matplotlib",
+    "openstreetmap"
+]
+classifiers = [
+    "Intended Audience :: Science/Research"
+]
+packages = [
+    {include = "prettymaps"}
+]
+include = [
+    "prettymaps/presets/*.json"
+]
+exclude = [
+    "assets",
+    "notebooks",
+    "prints",
+    "script"
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+osmnx = "1.2.2"
+shapely = ">=1.8,<2.0"
+pyyaml = "6.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+prettymaps = 'prettymaps.cli:draw'
