@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import click
 import PIL
 from matplotlib import cm as colormaps
@@ -326,6 +328,14 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
     help="The padding to be applied around the map.",
     show_default=True,
 )
+@click.option(
+    "-o",
+    "--output-dir",
+    default=None,
+    type=str,
+    help="The directory to store the map under",
+    show_default=True,
+)
 @click.option("--bw", is_flag=True, help="Generate a black & white map")
 def draw(
     location,
@@ -339,6 +349,7 @@ def draw(
     margins_mm,
     scaling_factor,
     padding,
+    output_dir,
     bw,
 ):
     """Artistic map generation CLI, based on the prettymaps library
@@ -394,6 +405,8 @@ def draw(
         + f"-{radius}-{format}-{shape}-{theme_name}"
     )
     filename = f"{base_filename}.png"
+    if output_dir:
+        filename = Path(output_dir) / filename
 
     plot(
         query=location,
