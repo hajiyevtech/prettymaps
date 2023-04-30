@@ -1,5 +1,4 @@
 import click
-import matplotlib.font_manager as fm
 import PIL
 from matplotlib import cm as colormaps
 from matplotlib import pyplot as plt
