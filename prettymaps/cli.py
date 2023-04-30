@@ -149,7 +149,7 @@ def generate_layers(circle, river_overflow):
         "water": {
             "tags": {"natural": ["water", "bay", "river", "stream", "waterway"]},
             "circle": not circle if river_overflow else circle,
-            "dilate": 100,
+            "dilate": 100 if river_overflow else 0,
         },
         "green": {
             "tags": {
