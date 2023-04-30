@@ -308,7 +308,7 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
 )
 @click.option(
     "--margins-mm",
-    default=2,
+    default=0,
     type=int,
     help="The margin size, in mm, to place around the map. Useful for print jobs..",
     show_default=True,
