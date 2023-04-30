@@ -320,6 +320,13 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
     help="The scaling factor applied on the final generated image.",
     show_default=True,
 )
+@click.option(
+    "--padding",
+    default=100,
+    type=int,
+    help="The padding to be applied around the map.",
+    show_default=True,
+)
 @click.option("--bw", is_flag=True, help="Generate a black & white map")
 def draw(
     location,
@@ -332,6 +339,7 @@ def draw(
     background_color,
     margins_mm,
     scaling_factor,
+    padding,
     bw,
 ):
     """Artistic map generation CLI, based on the prettymaps library
@@ -398,6 +406,7 @@ def draw(
         ratio=figsize[0] / figsize[1],
         preset=None,
         circle=True if circle else False,
+        padding=padding,
     )
     plt.savefig(filename)
 

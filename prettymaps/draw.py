@@ -847,6 +847,7 @@ def plot(
     scale_x=1,
     scale_y=1,
     rotation=0,
+    padding=None,
 ):
     """
 
@@ -996,7 +997,7 @@ def plot(
         ax.axis("equal")
         ax.autoscale()
 
-        xmin, ymin, xmax, ymax = background.bounds
+        xmin, ymin, xmax, ymax = background.buffer(padding).bounds
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
 
