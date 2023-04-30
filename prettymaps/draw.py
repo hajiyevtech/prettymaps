@@ -1005,7 +1005,7 @@ def plot(
             ax.set_title(
                 label=title,
                 loc="center",
-                y=min(0.01, padding / (figsize[1] * plt.rcParams["figure.dpi"])),
+                y=min(0.005, padding / (figsize[1] * plt.rcParams["figure.dpi"])),
                 fontdict={"family": "monospace", "fontsize": 10},
             )
 

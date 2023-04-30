@@ -24,7 +24,7 @@ def make_theme(building_palette, background_color, bw=False):
         "background": {
             "fc": "#fff" if bw else background_color,
             "ec": "#fff" if bw else "#dadbc1",
-            "hatch": "ooo...",
+            "hatch": "......",
             "zorder": -1,
         },
         "perimeter": {"fill": False, "lw": 1 if bw else 0, "zorder": 0},
@@ -32,7 +32,7 @@ def make_theme(building_palette, background_color, bw=False):
             "fc": "#ffffff" if bw else "#8BB174",
             "ec": "#000" if bw else "#2F3737",
             "hatch_c": "#ffffff" if bw else "#A7C497",
-            "hatch": "ooo...",
+            "hatch": "......",
             "lw": 2 if bw else 1,
             "zorder": 1,
             "alpha": 0.5,
@@ -42,7 +42,7 @@ def make_theme(building_palette, background_color, bw=False):
             "ec": "#000000" if bw else "#64a38d",
             "lw": 0,
             "zorder": 1,
-            "hatch": "ooo...",
+            "hatch": "......",
         },
         "water": {
             "fc": "#ffffff" if bw else "#a8e1e6",
@@ -80,7 +80,7 @@ def make_theme(building_palette, background_color, bw=False):
             "fc": "#ffffff" if bw else "#8BB174",
             "ec": "#000000" if bw else "#2F3737",
             "hatch_c": "#ffffff" if bw else "#A7C497",
-            "hatch": "ooo...",
+            "hatch": "......",
             "lw": 2 if bw else 1,
             "zorder": 1,
             "alpha": 0.5,
@@ -90,14 +90,14 @@ def make_theme(building_palette, background_color, bw=False):
             "ec": "#000000" if bw else "#8bc49e",
             "lw": 0,
             "zorder": 1,
-            "hatch": "ooo...",
+            "hatch": "......",
         },
         "wetland": {
             "fc": "#ffffff" if bw else "#D2D68D",
             "ec": "#000000" if bw else "#AEB441",
             "lw": 0,
             "zorder": 3,
-            "hatch": "ooo...",
+            "hatch": "......",
         },
         "beach": {
             "fc": "#ffffff" if bw else "#e3da8d",
@@ -244,7 +244,7 @@ custom_themes = {
 }
 
 
-def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_color):
+def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_color, dpi):
     """Add a margin of argument size in cm to the 4 sides of the image."""
     img = PIL.Image.open(img_path)
     width_px, height_px = img.size
@@ -254,7 +254,7 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
     new_height = height_px + 2 * margin_cm_in_px
     result = PIL.Image.new(img.mode, (new_width, new_height), rgb_color)
     result.paste(img, (margin_cm_in_px, margin_cm_in_px))
-    result.save(img_path, dpi=(300, 300))
+    result.save(img_path, dpi=(dpi, dpi))
 
 
 def format_autodocumented_title():
@@ -383,6 +383,7 @@ def draw(
     scaling_factor,
     padding,
     output_dir,
+    dpi,
     bw,
 ):
     """Artistic map generation CLI, based on the prettymaps library
@@ -407,8 +408,11 @@ def draw(
       $ prettymaps --location <address> --radius 2000
 
     """
-    # the *3 is a weird hack to go from dpi 100 to 300 w/o losing in dimensions
-    figsize = [x * scaling_factor * 3 for x in dimensions_inches[format]]
+    default_dpi = plt.rcParams["figure.dpi"]
+    dpi_ratio = dpi / default_dpi
+    padding *= dpi_ratio
+    figsize = tuple([x * scaling_factor for x in dimensions_inches[format]])
+    plt.rcParams["figure.dpi"] = dpi
 
     if not vertical:
         figsize = tuple(reversed(figsize))
@@ -418,6 +422,7 @@ def draw(
     # colormap name
     if not background_color.startswith("#"):
         background_color = f"#{background_color}"
+
     themes = {
         name: make_theme(**theme_params, bw=bw)
         for name, theme_params in custom_themes.items()
@@ -464,6 +469,7 @@ def draw(
             img_dimensions_inches=figsize,
             margin_cm=margins_mm / 10,
             rgb_color=(255, 255, 255),
+            dpi=dpi,
         )
 
 
