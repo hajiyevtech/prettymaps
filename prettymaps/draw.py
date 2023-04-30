@@ -18,14 +18,11 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import json
 import os
-
-# import IPython
 import pathlib
-import re
 import warnings
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Tuple, Union
 
 import geopandas as gp
 import matplotlib
@@ -34,9 +31,7 @@ import osmnx as ox
 import pandas as pd
 import shapely.affinity
 import shapely.ops
-import yaml
 from matplotlib import pyplot as plt
-from matplotlib.colors import hex2color
 from matplotlib.patches import Path, PathPatch
 from shapely.geometry import (
     GeometryCollection,
@@ -50,8 +45,6 @@ from shapely.geometry import (
 from shapely.geometry.base import BaseGeometry
 
 from .fetch import get_gdfs
-
-# import vsketch
 
 
 class Subplot:

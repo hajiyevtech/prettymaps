@@ -25,14 +25,7 @@ import osmnx as ox
 from geopandas import GeoDataFrame
 from shapely.affinity import rotate
 from shapely.errors import ShapelyDeprecationWarning
-from shapely.geometry import (
-    LineString,
-    MultiLineString,
-    MultiPolygon,
-    Point,
-    Polygon,
-    box,
-)
+from shapely.geometry import Point, Polygon, box
 from shapely.ops import unary_union
 
 
