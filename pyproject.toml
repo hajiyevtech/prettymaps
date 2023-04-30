@@ -29,7 +29,8 @@ exclude = [
     "assets",
     "notebooks",
     "prints",
-    "script"
+    "script",
+    "output"
 ]
 
 [tool.poetry.dependencies]
