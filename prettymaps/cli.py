@@ -407,8 +407,8 @@ def draw(
         preset=None,
         circle=True if circle else False,
         padding=padding,
+        save_as=filename,
     )
-    plt.savefig(filename)
 
     # Add margins, for the printer
     if margins_mm:
