@@ -30,7 +30,8 @@ exclude = [
     "notebooks",
     "prints",
     "script",
-    "output"
+    "output",
+    "examples",
 ]
 
 [tool.poetry.dependencies]
