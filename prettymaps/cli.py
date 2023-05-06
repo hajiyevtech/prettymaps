@@ -272,6 +272,12 @@ def format_autodocumented_title():
             continue
         else:
             cmd_tokens = cmd_tokens[:idx] + cmd_tokens[idx + 2 :]
+    location_idx = cmd_tokens.index("--location")
+    cmd_tokens[location_idx + 1] = '"' + cmd_tokens[location_idx + 1]
+    for i, tok in enumerate(cmd_tokens[location_idx + 2 :], location_idx + 1):
+        if tok.startswith("-"):
+            break
+    cmd_tokens[i] = cmd_tokens[i] + '"'
     return " ".join(cmd_tokens)
 
 
