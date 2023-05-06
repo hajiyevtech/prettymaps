@@ -374,6 +374,13 @@ def format_autodocumented_title():
     help="Number of pixels per inch",
     show_default=True,
 )
+@click.option(
+    "--credit/--no-credit",
+    default=True,
+    is_flag=True,
+    help="Show/hide credits",
+    show_default=True,
+)
 @click.option("--bw", is_flag=True, help="Generate a black & white map")
 def draw(
     location,
@@ -390,6 +397,7 @@ def draw(
     padding,
     output_dir,
     dpi,
+    credit,
     bw,
 ):
     """Artistic map generation CLI, based on the prettymaps library
@@ -458,7 +466,7 @@ def draw(
         figsize=figsize,
         radius=radius,
         title=format_autodocumented_title() if cmd_as_title else None,
-        credit=False,
+        credit=False if not credit else {"fontfamily": "monospace"},
         layers=generate_layers(circle, river_overflow),
         style=theme_params,
         ratio=figsize[0] / figsize[1],

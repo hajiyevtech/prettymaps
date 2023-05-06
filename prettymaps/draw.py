@@ -552,7 +552,9 @@ def create_background(
     return background, xmin, ymin, xmax, ymax, dx, dy
 
 
-def draw_text(params: Dict[str, dict], background: BaseGeometry) -> None:
+def draw_text(
+    params: Dict[str, dict], background: BaseGeometry, text_y: int = 0
+) -> None:
     """
     Draw text with content and matplotlib style parameters specified by 'params' dictionary.
     params['text'] should contain the message to be drawn
@@ -564,16 +566,11 @@ def draw_text(params: Dict[str, dict], background: BaseGeometry) -> None:
     # Override default osm_credit dict with provided parameters
     params = override_params(
         dict(
-            text="\n".join(
-                [
-                    "data © OpenStreetMap contributors",
-                    "github.com/marceloprates/prettymaps",
-                ]
-            ),
-            x=0,
-            y=1,
-            horizontalalignment="left",
-            verticalalignment="top",
+            text="data © OpenStreetMap contributors / github.com/marceloprates/prettymaps",
+            x=0.25,
+            y=text_y,
+            # horizontalalignment="center",
+            # verticalalignment="bottom",
             bbox=dict(boxstyle="square", fc="#fff", ec="#000"),
             fontfamily="Ubuntu Mono",
         ),
@@ -986,28 +983,28 @@ def plot(
             )
         )
 
-    # 10. Draw credit message
-    if (mode == "matplotlib") and (credit != False) and (not multiplot):
-        draw_text(credit, background)
-
-    # 11. Ajust figure and create PIL Image
+    # 10. Ajust figure and create PIL Image
     if mode == "matplotlib":
         # Adjust axis
         ax.axis("off")
         ax.axis("equal")
         ax.autoscale()
 
-        xmin, ymin, xmax, ymax = background.buffer(padding).bounds
+        background = background.buffer(padding)
+        xmin, ymin, xmax, ymax = background.bounds
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
-
+        text_y = min(0.005, padding / (figsize[1] * plt.rcParams["figure.dpi"]))
         if title:
             ax.set_title(
                 label=title,
                 loc="center",
-                y=min(0.005, padding / (figsize[1] * plt.rcParams["figure.dpi"])),
+                y=text_y,
                 fontdict={"family": "monospace", "fontsize": 10},
             )
+        # 10. Draw credit message
+        elif (credit != False) and not multiplot:
+            draw_text(credit, background, text_y)
 
         # Save result
         if save_as:

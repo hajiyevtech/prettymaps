@@ -64,8 +64,9 @@ Options:
                                   CLI command used to generate it
   -o, --output-dir TEXT           The directory to store the map under
   --dpi INTEGER                   Number of pixels per inch  [default: 100]
+  --credit / --no-credit          Show/hide credits  [default: credit]
   --bw                            Generate a black & white map
-  --help                          Show this message and exit.
+  --help                          Show this message and exit.                       Show this message and exit.
 ```
 
 You can refer to the [`examples/`](https://github.com/brouberol/prettymaps/tree/main/examples) directory, as each map will be titled after the command that was executed to generate it.
