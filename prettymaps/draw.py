@@ -553,7 +553,7 @@ def create_background(
 
 
 def draw_text(
-    params: Dict[str, dict], background: BaseGeometry, text_y: int = 0
+    params: Dict[str, dict], background: BaseGeometry, x: int = 0, y: int = 0
 ) -> None:
     """
     Draw text with content and matplotlib style parameters specified by 'params' dictionary.
@@ -567,8 +567,8 @@ def draw_text(
     params = override_params(
         dict(
             text="data © OpenStreetMap contributors / github.com/marceloprates/prettymaps",
-            x=0.25,
-            y=text_y,
+            x=x,
+            y=y,
             # horizontalalignment="center",
             # verticalalignment="bottom",
             bbox=dict(boxstyle="square", fc="#fff", ec="#000"),
@@ -994,17 +994,16 @@ def plot(
         xmin, ymin, xmax, ymax = background.bounds
         ax.set_xlim(xmin, xmax)
         ax.set_ylim(ymin, ymax)
-        text_y = min(0.005, padding / (figsize[1] * plt.rcParams["figure.dpi"]))
         if title:
             ax.set_title(
                 label=title,
                 loc="center",
-                y=text_y,
+                y=0.97,
                 fontdict={"family": "monospace", "fontsize": 10},
             )
         # 10. Draw credit message
-        elif (credit != False) and not multiplot:
-            draw_text(credit, background, text_y)
+        if (credit != False) and not multiplot:
+            draw_text(credit, background, x=0.32, y=0.02)
 
         # Save result
         if save_as:
