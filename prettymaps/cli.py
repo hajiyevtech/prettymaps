@@ -16,6 +16,8 @@ dimensions_inches = {
     "A2": (42.0 * cm, 59.4 * cm),
     "A1": (59.4 * cm, 84.1 * cm),
     "A0": (84.1 * cm, 118.8 * cm),
+    "54": (50 * cm, 40 * cm),  # 5:4 aspect ratio
+    "169": (45.72 * cm, 81.28 * cm),  # 16:9 aspect ratio
 }
 
 
@@ -258,26 +260,18 @@ def add_margin_on_each_side(img_path, img_dimensions_inches, margin_cm, rgb_colo
 
 
 def format_autodocumented_title():
-    tokens = sys.argv[:]
-    ignored_flags = ["--cmd-as-title"]
-    ignored_options = ["-o", "--output-dir"]
-    cmd_tokens = ["prettymaps"] + tokens[1:]
-    for flag in ignored_flags:
-        if flag in cmd_tokens:
-            cmd_tokens.remove(flag)
-    for opt in ignored_options:
-        try:
-            idx = cmd_tokens.index(opt)
-        except ValueError:
-            continue
-        else:
-            cmd_tokens = cmd_tokens[:idx] + cmd_tokens[idx + 2 :]
-    location_idx = cmd_tokens.index("--location")
-    cmd_tokens[location_idx + 1] = '"' + cmd_tokens[location_idx + 1]
-    for i, tok in enumerate(cmd_tokens[location_idx + 2 :], location_idx + 1):
-        if tok.startswith("-"):
-            break
-    cmd_tokens[i] = cmd_tokens[i] + '"'
+    tokens = sys.argv[1:]  # Skip the script name, start with arguments
+    cmd_tokens = []
+
+    # Locate the --location flag and its value
+    try:
+        location_idx = tokens.index("--location")
+        location_value = tokens[location_idx + 1]
+        cmd_tokens = ['' + location_value + '']
+    except ValueError:
+        pass  # Handle case where '--location' is not present
+
+    # Return the location value or an empty string if not found
     return " ".join(cmd_tokens)
 
 
@@ -382,7 +376,17 @@ def format_autodocumented_title():
     show_default=True,
 )
 @click.option("--bw", is_flag=True, help="Generate a black & white map")
+# custom title
+@click.option(
+    "--customtitle",
+    default=None,
+    type=str,
+    help="The title of the map",
+    show_default=True,
+)
+
 def draw(
+    customtitle,
     location,
     radius,
     circle,
@@ -460,12 +464,19 @@ def draw(
     if output_dir:
         filename = Path(output_dir) / filename
 
+    # Use customtitle if it's not None, otherwise use the result of format_autodocumented_title() if cmd_as_title is True
+    title = (
+        customtitle
+        if customtitle is not None
+        else (format_autodocumented_title() if cmd_as_title else None)
+    )
+
     plot(
         query=location,
         ax=ax,
         figsize=figsize,
         radius=radius,
-        title=format_autodocumented_title() if cmd_as_title else None,
+        title=title,
         credit=False if not credit else {"fontfamily": "monospace"},
         layers=generate_layers(circle, river_overflow),
         style=theme_params,
